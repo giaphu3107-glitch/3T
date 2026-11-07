@@ -831,38 +831,82 @@ setInterval(function() {
 }, 2500);
 
 </script>
+<!-- KHU VỰC CHỨA FILE NHẠC (Đặt ngay trước script) -->
+<audio id="backgroundMusic" loop preload="auto">
+    <source src="./love.mp3" type="audio/mpeg">
+</audio>
+
 <script>
-  // Tự động sửa link ibb.co thành ảnh thật
-  document.querySelectorAll('img').forEach(img => {
-    let src = img.src;
-    if (src.includes('ibb.co/') && !src.includes('i.ibb.co')) {
-      let parts = src.split('ibb.co/');
-      let id = parts[1]; // Lấy phần ID phía sau dấu gạch chéo
-      if (id) {
-        img.src = `https://ibb.co{id}/image.png`;
-      }
+    // --- LẬP TRÌNH ĐIỀU KHIỂN NHẠC ---
+    const audio = document.getElementById('backgroundMusic');
+    const musicToggleBtn = document.getElementById('musicToggle');
+    const disc = document.querySelector('.disc');
+
+    if (musicToggleBtn && audio) {
+        // Hàm xử lý Bật/Tắt nhạc và quay đĩa
+        function togglePlay() {
+            if (audio.paused) {
+                audio.play().then(() => {
+                    disc.classList.add('playing');
+                    musicToggleBtn.innerHTML = '⏸'; // Đổi icon sang Pause
+                }).catch(err => {
+                    console.log("Trình duyệt chặn autoplay ngầm:", err);
+                });
+            } else {
+                audio.pause();
+                disc.classList.remove('playing');
+                musicToggleBtn.innerHTML = '▶'; // Đổi icon sang Play
+            }
+        }
+
+        // Bấm trực tiếp vào nút hình tam giác để phát/dừng nhạc
+        musicToggleBtn.addEventListener('click', function(e) {
+            e.stopPropagation(); // Tránh bị kích hoạt 2 lần
+            togglePlay();
+        });
+
+        // Tự động phát nhạc ở bất kỳ cú click đầu tiên nào trên trang (Vượt rào bảo mật trình duyệt)
+        document.addEventListener('click', function() {
+            if (audio.paused) {
+                togglePlay();
+            }
+        }, { once: true });
     }
-  });
-</script>
 
-<script>
-  // Tìm nút Play trên giao diện (bạn hãy kiểm tra lại class/id nút này trong code của bạn nhé)
-  // Ở đây mình tạm gọi nút hình tròn Play của bạn là nút có chức năng click
-  const playButton = document.querySelector('.icon-play') || document.querySelector('audio + div') || document.body; 
-  const audio = document.getElementById('backgroundMusic');
-
-  if (playButton && audio) {
-    playButton.addEventListener('click', function() {
-      if (audio.paused) {
-        audio.play()
-          .then(() => console.log("Đang phát nhạc..."))
-          .catch(error => alert("Không thể phát nhạc. Hãy kiểm tra lại file love.mp3 có nằm cùng thư mục với file HTML không nhé!"));
-      } else {
-        audio.pause();
-      }
+    // --- TỰ ĐỘNG SỬA LINK ẢNH IMGBB (ibb.co -> i.ibb.co) ---
+    document.querySelectorAll('.photo img').forEach(img => {
+        let src = img.getAttribute('src');
+        if (src && src.includes('ibb.co/') && !src.includes('i.ibb.co')) {
+            let id = src.split('ibb.co/')[1]; // Lấy chuẩn xác mã ID phía sau
+            if (id) {
+                img.src = `https://ibb.co{id}/image.png`;
+            }
+        }
     });
-  }
-</script>
+
+    // --- ĐOẠN XỬ LÝ NÚT BẤM CHUYỂN TRANG 1 SANG TRANG 2 ---
+    // (Bổ sung phòng trường hợp bạn bấm nút "Yes" mà trang 2 chưa hiện)
+    const yesBtn = document.getElementById('yesBtn');
+    const page1 = document.getElementById('page1');
+    const page2 = document.getElementById('page2');
+    
+    if (yesBtn && page1 && page2) {
+        yesBtn.addEventListener('click', function() {
+            page1.classList.add('hidden');
+            page2.classList.remove('hidden');
+            // Kích hoạt nhạc luôn khi đồng ý vào trang
+            if (audio && audio.paused) {
+                audio.play().then(() => {
+                    if(disc) disc.classList.add('playing');
+                    if(musicToggleBtn) musicToggleBtn.innerHTML = '⏸';
+                }).catch(e => console.log(e));
+            }
+        });
+    }
+
+   
+</body>
+</html>
 
 
 </body>
