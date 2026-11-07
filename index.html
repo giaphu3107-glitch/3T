@@ -832,29 +832,38 @@ setInterval(function() {
 
 </script>
 <script>
-  // Tự động tìm tất cả các thẻ img trên trang của bạn
+  // Tự động sửa link ibb.co thành ảnh thật
   document.querySelectorAll('img').forEach(img => {
     let src = img.src;
-    // Nếu phát hiện link dạng ibb.co (chưa sửa), đoạn code này sẽ tự cấu trúc lại thành link ảnh thật
     if (src.includes('ibb.co/') && !src.includes('i.ibb.co')) {
-      let id = src.split('ibb.co/')[1];
-      img.src = `https://ibb.co{id}/image.png`;
+      let parts = src.split('ibb.co/');
+      let id = parts[1]; // Lấy phần ID phía sau dấu gạch chéo
+      if (id) {
+        img.src = `https://ibb.co{id}/image.png`;
+      }
     }
   });
 </script>
+
 <script>
-  // Chờ người dùng click vào trang để bắt đầu phát nhạc
-  document.addEventListener('click', function() {
-    const audio = document.getElementById('backgroundMusic');
-    
-    // Kiểm tra nếu nhạc đang dừng thì sẽ phát
-    if (audio.paused) {
-      audio.play().catch(error => {
-        console.log("Trình duyệt chặn autoplay:", error);
-      });
-    }
-  }, { once: true }); // Thao tác này chỉ chạy duy nhất 1 lần khi click đầu tiên
+  // Tìm nút Play trên giao diện (bạn hãy kiểm tra lại class/id nút này trong code của bạn nhé)
+  // Ở đây mình tạm gọi nút hình tròn Play của bạn là nút có chức năng click
+  const playButton = document.querySelector('.icon-play') || document.querySelector('audio + div') || document.body; 
+  const audio = document.getElementById('backgroundMusic');
+
+  if (playButton && audio) {
+    playButton.addEventListener('click', function() {
+      if (audio.paused) {
+        audio.play()
+          .then(() => console.log("Đang phát nhạc..."))
+          .catch(error => alert("Không thể phát nhạc. Hãy kiểm tra lại file love.mp3 có nằm cùng thư mục với file HTML không nhé!"));
+      } else {
+        audio.pause();
+      }
+    });
+  }
 </script>
+
 
 </body>
 </html>
