@@ -479,9 +479,8 @@ footer {
 
 <!-- NHẠC -->
 <audio id="backgroundMusic" loop preload="auto">
-    <source src="https://mixkit.co" type="audio/mpeg">
+    <source src="./love.mp3" type="audio/mpeg">
 </audio>
-
 <!-- TRANG 1 -->
 <section id="page1" class="page">
 
@@ -584,18 +583,27 @@ footer {
             Ba khoảnh khắc nhỏ, nhưng anh muốn giữ thật lâu.
         </p>
 
-      <div class="gallery">
+     <div class="gallery">
+
     <div class="photo">
-        <img src="https://ibb.co" alt="Our memory 1" onerror="this.src='https://picsum.photos'">
+        <!-- Ảnh 1: Link ảnh gốc chuẩn từ ImgBB -->
+        <img src="https://ibb.co" alt="Our memory 1">
     </div>
+
     <div class="photo">
-        <img src="https://ibb.co" alt="Our memory 2" onerror="this.src='https://picsum.photos'">
+        <!-- Ảnh 2: Link ảnh gốc chuẩn từ ImgBB -->
+        <img src="https://ibb.co" alt="Our memory 2">
         <p>My happiness ♡</p>
     </div>
+
     <div class="photo">
-        <img src="https://ibb.co" alt="Our memory 3" onerror="this.src='https://picsum.photos'">
+        <!-- Ảnh 3: Link ảnh gốc chuẩn từ ImgBB -->
+        <img src="https://ibb.co" alt="Our memory 3">
         <p>My forever ♡</p>
     </div>
+
+</div>
+
 </div>
 
 
@@ -830,59 +838,38 @@ setInterval(function() {
 </script>
 <!-- KHU VỰC CHỨA FILE NHẠC (Đặt ngay trước script) -->
 <audio id="backgroundMusic" loop preload="auto">
-    <source src="./love.mp3" type="audio/mpeg">
+    <source src="https://github.io" type="audio/mpeg">
 </audio>
 
 <script>
-    // --- LẬP TRÌNH ĐIỀU KHIỂN NHẠC ---
     const audio = document.getElementById('backgroundMusic');
     const musicToggleBtn = document.getElementById('musicToggle');
     const disc = document.querySelector('.disc');
 
-    if (musicToggleBtn && audio) {
-        // Hàm xử lý Bật/Tắt nhạc và quay đĩa
-        function togglePlay() {
-            if (audio.paused) {
-                audio.play().then(() => {
-                    disc.classList.add('playing');
-                    musicToggleBtn.innerHTML = '⏸'; // Đổi icon sang Pause
-                }).catch(err => {
-                    console.log("Trình duyệt chặn autoplay ngầm:", err);
-                });
-            } else {
-                audio.pause();
-                disc.classList.remove('playing');
-                musicToggleBtn.innerHTML = '▶'; // Đổi icon sang Play
-            }
+    // Hàm điều khiển phát/dừng nhạc kèm xoay đĩa
+    function togglePlay() {
+        if (!audio) return;
+        if (audio.paused) {
+            audio.play().then(() => {
+                if (disc) disc.classList.add('playing');
+                if (musicToggleBtn) musicToggleBtn.innerHTML = '⏸';
+            }).catch(err => console.log("Chờ người dùng tương tác"));
+        } else {
+            audio.pause();
+            if (disc) disc.classList.remove('playing');
+            if (musicToggleBtn) musicToggleBtn.innerHTML = '▶';
         }
-
-        // Bấm trực tiếp vào nút hình tam giác để phát/dừng nhạc
-        musicToggleBtn.addEventListener('click', function(e) {
-            e.stopPropagation(); // Tránh bị kích hoạt 2 lần
-            togglePlay();
-        });
-
-        // Tự động phát nhạc ở bất kỳ cú click đầu tiên nào trên trang (Vượt rào bảo mật trình duyệt)
-        document.addEventListener('click', function() {
-            if (audio.paused) {
-                togglePlay();
-            }
-        }, { once: true });
     }
 
-    // --- TỰ ĐỘNG SỬA LINK ẢNH IMGBB (ibb.co -> i.ibb.co) ---
-    document.querySelectorAll('.photo img').forEach(img => {
-        let src = img.getAttribute('src');
-        if (src && src.includes('ibb.co/') && !src.includes('i.ibb.co')) {
-            let id = src.split('ibb.co/')[1]; // Lấy chuẩn xác mã ID phía sau
-            if (id) {
-                img.src = `https://ibb.co{id}/image.png`;
-            }
-        }
-    });
+    // Bấm nút Play trên đĩa nhạc
+    if (musicToggleBtn) {
+        musicToggleBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            togglePlay();
+        });
+    }
 
-    // --- ĐOẠN XỬ LÝ NÚT BẤM CHUYỂN TRANG 1 SANG TRANG 2 ---
-    // (Bổ sung phòng trường hợp bạn bấm nút "Yes" mà trang 2 chưa hiện)
+    // Tự động phát khi bấm nút "Yes" chuyển trang
     const yesBtn = document.getElementById('yesBtn');
     const page1 = document.getElementById('page1');
     const page2 = document.getElementById('page2');
@@ -891,19 +878,34 @@ setInterval(function() {
         yesBtn.addEventListener('click', function() {
             page1.classList.add('hidden');
             page2.classList.remove('hidden');
-            // Kích hoạt nhạc luôn khi đồng ý vào trang
-            if (audio && audio.paused) {
-                audio.play().then(() => {
-                    if(disc) disc.classList.add('playing');
-                    if(musicToggleBtn) musicToggleBtn.innerHTML = '⏸';
-                }).catch(e => console.log(e));
-            }
+            // Phát nhạc ngay khi click vào nút Yes
+            setTimeout(togglePlay, 100); 
         });
     }
 
-   
-</body>
-</html>
+    // Kích hoạt dự phòng: Click bất kỳ đâu trên màn hình cũng tự phát nhạc
+    document.addEventListener('click', function() {
+        if (audio && audio.paused) {
+            togglePlay();
+        }
+    }, { once: true });
+
+    // SỬA ẢNH PHÁT SINH LỖI TỰ ĐỘNG
+    document.querySelectorAll('.photo img').forEach((img, index) => {
+        let src = img.getAttribute('src');
+        if (src && src.includes('ibb.co/') && !src.includes('i.ibb.co')) {
+            let parts = src.split('ibb.co/');
+            if (parts[1]) {
+                img.src = `https://ibb.co{parts[1]}/image.png`;
+            }
+        }
+        // Nếu ảnh ImgBB bị chết link, tự động thế bằng ảnh đẹp ngẫu nhiên
+        img.onerror = function() {
+            this.src = `https://picsum.photos{index}`;
+        };
+    });
+</script>
+
 
 
 </body>
