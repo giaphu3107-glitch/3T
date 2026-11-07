@@ -565,7 +565,7 @@ footer {
             <div class="disc" id="disc"></div>
 
             <div class="music-info">
-                <strong>Bình Yên – Vũ.</strong>
+                <strong>Yêu bé Thủy Tiên </strong>
                 <p>Our little soundtrack ♡</p>
             </div>
 
@@ -587,7 +587,7 @@ footer {
         <div class="gallery">
 
             <div class="photo">
-    <img src="https://ibb.co/LhtQSw3X" alt="Our memory 1">
+           <img src="https://ibb.co/LhtQSw3X" alt="Our memory 1">
             </div>
             <div class="photo">
                <img src="https://ibb.co/xtq59D9q" alt="Our memory 2">
@@ -830,6 +830,30 @@ setInterval(function() {
 
 }, 2500);
 
+</script>
+<script>
+  // Tự động tìm tất cả các thẻ img trên trang của bạn
+  document.querySelectorAll('img').forEach(img => {
+    let src = img.src;
+    // Nếu phát hiện link dạng ibb.co (chưa sửa), đoạn code này sẽ tự cấu trúc lại thành link ảnh thật
+    if (src.includes('ibb.co/') && !src.includes('i.ibb.co')) {
+      let id = src.split('ibb.co/')[1];
+      img.src = `https://ibb.co{id}/image.png`;
+    }
+  });
+</script>
+<script>
+  // Chờ người dùng click vào trang để bắt đầu phát nhạc
+  document.addEventListener('click', function() {
+    const audio = document.getElementById('backgroundMusic');
+    
+    // Kiểm tra nếu nhạc đang dừng thì sẽ phát
+    if (audio.paused) {
+      audio.play().catch(error => {
+        console.log("Trình duyệt chặn autoplay:", error);
+      });
+    }
+  }, { once: true }); // Thao tác này chỉ chạy duy nhất 1 lần khi click đầu tiên
 </script>
 
 </body>
